@@ -124,23 +124,8 @@ class Pivot extends \lang\Object {
    * @param  string* $path
    * @return [:var]
    */
-  public function sum($path) {
+  public function sum() {
     return $this->fact(func_get_args())[self::TOTAL];
-  }
-
-  /**
-   * Returns the percentage of the grant total
-   *
-   * @param  string* $path
-   * @return [:double]
-   */
-  public function percentage($path) {
-    $fact= $this->fact(func_get_args());
-    $return= [];
-    foreach ($fact[self::TOTAL] as $name => $value) {
-      $return[$name]= $value / $this->facts[self::TOTAL][$name] * 100;
-    }
-    return $return;
   }
 
   /**
@@ -149,7 +134,7 @@ class Pivot extends \lang\Object {
    * @param  string* $path
    * @return [:double]
    */
-  public function average($path) {
+  public function average() {
     $fact= $this->fact(func_get_args());
     $return= [];
     foreach ($fact[self::TOTAL] as $name => $value) {

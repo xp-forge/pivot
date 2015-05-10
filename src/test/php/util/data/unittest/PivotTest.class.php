@@ -115,6 +115,15 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals($expect, $pivot->count($category));
   }
 
+  #[@test]
+  public function sum() {
+    $pivot= Sequence::of($this->measurements())->collect((new InPivot())
+      ->groupingBy('type')
+      ->summing('occurrences')
+    );
+    $this->assertEquals(220, $pivot->sum()['occurrences']);
+  }
+
   #[@test, @values([['good', 201], ['ok', 9], ['bad', 10]])]
   public function sum_of($category, $expect) {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
@@ -124,13 +133,13 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals($expect, $pivot->sum($category)['occurrences']);
   }
 
-  #[@test, @values([['good', 91.364], ['ok', 4.091], ['bad', 4.545]])]
-  public function percentage_of($category, $expect) {
+  #[@test]
+  public function average() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
       ->summing('occurrences')
     );
-    $this->assertEquals($expect, round($pivot->percentage($category)['occurrences'], 3));
+    $this->assertEquals(36.667, round($pivot->average()['occurrences'], 3));
   }
 
   #[@test, @values([['good', 100.500], ['ok', 9.000], ['bad', 3.333]])]
@@ -184,7 +193,6 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(10, $pivot->sum('bad')['occurrences']);
     $this->assertEquals([401, 404, 500], $pivot->rows('bad'));
     $this->assertEquals($occurrences, $pivot->sum('bad', $status)['occurrences']);
-    $this->assertEquals($occurrences / 220 * 100, $pivot->percentage('bad', $status)['occurrences']);
   }
 
   #[@test]
