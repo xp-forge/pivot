@@ -9,8 +9,38 @@ Pivot table
 
 Working with [pivot tables](https://en.wikipedia.org/wiki/Pivot_table)
 
-Pivot
------
+Example
+-------
+Given the following input, e.g. from a logfile:
+
+```
+2015-05-10 00:00:09 OK: 304
+2015-05-10 00:00:17 OK: 304
+2015-05-10 00:00:42 OK: 304
+2015-05-10 00:00:48 GOOD: 200 (Cache miss, reload)
+2015-05-10 00:00:49 ERROR: 404 (Not found)
+...
+```
+
+...we load this into pivot table using the following:
+
+```php
+use io\streams\TextReader;
+use util\data\Pivot;
+
+$pivot= new Pivot(
+  [function($row) { return $row[2]; }, function($row) { return $row[3]; }],
+  function($row) { return $row[1]; },
+  ['occurrences' => function($row) { return 1; }]
+);
+
+$reader= new TextReader(new FileInputStream('measures.log'));
+while (null !== ($line= $reader->readLine())) {
+  $pivot->add(sscanf($line, '%[0-9-] %[0-9:] %[^:]: %d (%[^)])'));
+}
+```
+
+The resulting table will look something like this:
 
 ```
 .-----------------------------------------------------------------------------.
