@@ -50,7 +50,7 @@ while (null !== ($line= $reader->readLine())) {
 }
 ```
 
-The resulting table will look something like this (using "b:" as an abbreviation for *bytes*):
+The resulting table will look something like this (using "b:" as an abbreviation for *bytes* - this becomes relevant once we sum on multiple columns):
 
 ```
 .------------------------------------------------- ~ ----------------------------.
@@ -77,7 +77,7 @@ $count= $pivot->count('OK');                   // 2
 $count= $pivot->count();                       // 6
 
 $transferred= $pivot->sum('OK')['bytes'];      // 202
-$transferred= $pivot->sum')['bytes'];          // 1072
+$transferred= $pivot->sum()['bytes'];          // 1072
 
 $average= $pivot->average('OK')['bytes'];      // 101.0
 $average= $pivot->average()['bytes'];          // 178.7
