@@ -89,9 +89,9 @@ $rows= $pivot->rows();                         // ['OK', 'GOOD', 'ERROR']
 // GOOD: 1 / 6 = 16.7%
 // ERROR: 3 / 6 = 50.0%
 $total= $pivot->count();
-foreach ($pivot->rows() as $row) {
-  $count= $pivot->count($row);
-  printf("%s: %d / %d = %.1f%%\n", $row, $count, $total, $count / $total * 100);
+foreach ($pivot->rows() as $cat) {
+  $count= $pivot->count($cat);
+  printf("%s: %d / %d = %.1f%%\n", $cat, $count, $total, $count / $total * 100);
 }
 
 // client: 1
@@ -109,8 +109,8 @@ $columns= $pivot->columns();                   // ['2015-05-10', '2015-05-11']
 // 2015-05-10: 714 / 1072 bytes = 66.6%
 // 2015-05-11: 358 / 1072 bytes = 33.4%
 $total= $pivot->total()['bytes'];
-foreach ($pivot->columns() as $column) {
-  $bytes= $pivot->total($column)['bytes'];
-  printf("%s: %d / %d bytes = %.1f%%\n", $column, $bytes, $total, $bytes / $total * 100);
+foreach ($pivot->columns() as $date) {
+  $bytes= $pivot->total($date)['bytes'];
+  printf("%s: %d / %d bytes = %.1f%%\n", $date, $bytes, $total, $bytes / $total * 100);
 }
 ```
