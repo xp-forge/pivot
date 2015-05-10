@@ -15,9 +15,11 @@ Given the following input, e.g. from a logfile:
 
 ```
 2015-05-10 00:00:09 OK: 304 100 bytes
-2015-05-10 00:00:48 GOOD: 200 95 bytes (ETag: 214ceb4b-980-3a7bbd9630480)
-2015-05-10 00:00:49 ERROR: 404 512 bytes (Not found)
-2015-05-11 00:00:17 OK: 304 95 bytes
+2015-05-10 00:00:48 GOOD: 200 102 bytes (ETag: 214ceb4b-980-3a7bbd9630480)
+2015-05-10 03:00:49 ERROR: 404 512 bytes (Not found)
+2015-05-11 00:00:17 OK: 304 102 bytes
+2015-05-11 02:01:01 ERROR: 500 0 bytes (Internal Server Error)
+2015-05-11 02:01:02 ERROR: 500 256 bytes (Internal Server Error)
 ...
 ```
 
@@ -51,20 +53,19 @@ while (null !== ($line= $reader->readLine())) {
 The resulting table will look something like this (using "b:" as an abbreviation for *bytes*):
 
 ```
-.-----------------------------------------------------------------------------------.
-| Category  | 2015-05-10 | 2015-05-11 | Count  | Sum      | Percentage | Avg.       |
-|-----------|------------|------------|--------|----------|------------|------------|
-| OK        | b:100      | b:95       | 2      | b:195    | b:97.5     | b:97.5     |
-| GOOD      | b:2        | b:0        | 1      | b:2      | b:1.0      | b:2        |
-| ERROR     | b:0        | b:3        | 3      | b:3      | b:1.5      | b:1.0      |
-| ^- client | ^- b:0     | ^- b:2     | ^- 3   | ^- b:2   | ^- b:1.0   | ^- b:0.67  |
-|   ^- 403  |   ^- b:0   |   ^- b:1   |   ^- 1 |   ^- b:1 |   ^- b:0.5 |   ^- b:1.0 |
-|   ^- 404  |   ^- b:0   |   ^- b:1   |   ^- 2 |   ^- b:1 |   ^- b:0.5 |   ^- b:0.5 |
-| ^- server | ^- b:0     | ^- b:1     | ^- 1   | ^- b:1   | ^- b:0.5   | ^- b:0.5   |
-|   ^- 500  |   ^- b:0   |   ^- b:1   |   ^- 1 |   ^- b:1 |   ^- b:0.5 |  ^- b:0.5  |
-|-----------|------------|------------|--------|----------|------------|------------|
-| Total     | b:102      | b:98       | 14     | b:200    |            |            |
-`-----------------------------------------------------------------------------------´
+.--------------------------------------------------------------------------------------.
+| Category  | 2015-05-10 | 2015-05-11 | Count  | Sum        | Percentage  | Avg.       |
+|-----------|------------|------------|--------|------------|-------------|------------|
+| OK        | b:100      | b:102      | 2      | b:202      | b:18.8      | b:101      |
+| GOOD      | b:102      | b:0        | 1      | b:102      | b:9.5       | b:102      |
+| ERROR     | b:512      | b:256      | 3      | b:768      | b:71.6      | b:256      |
+| ^- client | ^- b:512   | ^- b:0     | ^- 1   | ^- b:512   | ^- b:47.7   | ^- b:512   |
+|   ^- 404  |   ^- b:512 |   ^- b:0   |   ^- 1 |   ^- b:512 |   ^- b:47.7 |   ^- b:512 |
+| ^- server | ^- b:0     | ^- b:256   | ^- 2   | ^- b:256   | ^- b:23.8   | ^- b:128   |
+|   ^- 500  |   ^- b:0   |   ^- b:256 |   ^- 2 |   ^- b:256 |   ^- b:23.8 |  ^- b:128  |
+|-----------|------------|------------|--------|------------|-------------|------------|
+| Total     | b:716      | b:358      | 6      | b:1072     |             |            |
+`--------------------------------------------------------------------------------------´
 ```
 
 ### Accessing by category
@@ -74,8 +75,8 @@ We can iterate over the categories using the `rows()` method. Accessing a single
 ```php
 $rows= $pivot->rows();                         // ['OK', 'GOOD', 'ERROR']
 $count= $pivot->count('OK');                   // 2
-$transferred= $pivot->sum('OK')['bytes'];      // 195
-$average= $pivot->average('OK')['bytes'];      // 97.5
+$transferred= $pivot->sum('OK')['bytes'];      // 202
+$average= $pivot->average('OK')['bytes'];      // 101.0
 
 // OK: 97.5%
 // GOOD: 1.0%
@@ -97,13 +98,13 @@ To iterate over the dates, use the `columns()` method. Accessing a single column
 
 ```php
 $columns= $pivot->columns();                   // ['2015-05-10', '2015-05-11']
-$total= $pivot->total('2015-05-10')['bytes'];  // 102
+$total= $pivot->total('2015-05-10')['bytes'];  // 716
 ```
 
 ###  Grand totals
 Use the `total()` method without any argument to access the grand total for all values. The `count()` method returns the total number of records processed.
 
 ```php
-$total= $pivot->total()['bytes'];              // 200
-$count= $pivot->count();                       // 14
+$total= $pivot->total()['bytes'];              // 1072
+$count= $pivot->count();                       // 6
 ```
