@@ -53,19 +53,21 @@ while (null !== ($line= $reader->readLine())) {
 The resulting table will look something like this (using "b:" as an abbreviation for *bytes* - this becomes relevant once we sum on multiple columns):
 
 ```
-.------------------------------------------------- ~ ---------------------------.
-| Category  | Count  || 2015-05-10 | 2015-05-11 |- ~ -| Sum        | Avg.       |
-|-----------|--------||------------|------------|- ~ -|------------|------------|
-| OK        | 2      || b:100      | b:102      |- ~ -| b:202      | b:101      |
-| GOOD      | 1      || b:102      | b:0        |- ~ -| b:102      | b:102      |
-| ERROR     | 3      || b:512      | b:256      |- ~ -| b:768      | b:256      |
-| ^- client | ^- 1   || ^- b:512   | ^- b:0     |- ~ -| ^- b:512   | ^- b:512   |
-|   ^- 404  |   ^- 1 ||   ^- b:512 |   ^- b:0   |- ~ -|   ^- b:512 |   ^- b:512 |
-| ^- server | ^- 2   || ^- b:0     | ^- b:256   |- ~ -| ^- b:256   | ^- b:128   |
-|   ^- 500  |   ^- 2 ||   ^- b:0   |   ^- b:256 |- ~ -|   ^- b:256 |  ^- b:128  |
-|-----------|--------||------------|------------|- ~ -|------------|------------|
-| Total     | 6      || b:714      | b:358      |- ~ -| b:1072     | b:178.7    |
-`------------------------------------------------- ~ ---------------------------´
+.------------------------------------------------------- ~ ---------------------------.
+|                    || Columns                             |                         |
+|                    ||--------------------------------- ~ -|                         |
+| Category  | Count  || 2015-05-10    | 2015-05-11    |- ~ -| Sum        | Average    |
+|-----------|--------||---------------|---------------|- ~ -|------------|------------|
+| OK        | 2      || 1, b:100      | 1, b:102      |- ~ -| b:202      | b:101      |
+| GOOD      | 1      || 1, b:102      |               |- ~ -| b:102      | b:102      |
+| ERROR     | 3      || 2, b:512      | 1, b:256      |- ~ -| b:768      | b:256      |
+| ^- client | ^- 1   || ^- 1, b:512   |               |- ~ -| ^- b:512   | ^- b:512   |
+|   ^- 404  |   ^- 1 ||   ^- 1, b:512 |               |- ~ -|   ^- b:512 |   ^- b:512 |
+| ^- server | ^- 2   || ^- 1, b:0     | ^- 1, b:256   |- ~ -| ^- b:256   | ^- b:128   |
+|   ^- 500  |   ^- 2 ||   ^- 1, b:0   |   ^- 1, b:256 |- ~ -|   ^- b:256 |  ^- b:128  |
+|-----------|--------||---------------|---------------|- ~ -|------------|------------|
+| Total     | 6      || b:714         | b:358         |- ~ -| b:1072     | b:178.7    |
+`------------------------------------------------------- ~ ---------------------------´
 ```
 
 ### Accessing values in a pivot
@@ -73,14 +75,20 @@ The resulting table will look something like this (using "b:" as an abbreviation
 The number of records grouped by the grouping columns can be retrieved via `count()`. The aggregates can be accessed by passing the category to the respective methods. 
 
 ```php
-$count= $pivot->count('OK');                   // 2
-$count= $pivot->count();                       // 6
+$count= $pivot->count('OK');                                // 2
+$count= $pivot->count();                                    // 6
 
-$transferred= $pivot->sum('OK')['bytes'];      // 202
-$transferred= $pivot->sum()['bytes'];          // 1072
+$count= $pivot->records('2015-05-10', 'OK');                // 1
+$count= $pivot->records('2015-05-10');                      // 4
 
-$average= $pivot->average('OK')['bytes'];      // 101.0
-$average= $pivot->average()['bytes'];          // 178.7
+$transferred= $pivot->column('2015-05-10', 'OK')['bytes'];  // 100
+$transferred= $pivot->column('2015-05-10')['bytes'];        // 714
+
+$transferred= $pivot->sum('OK')['bytes'];                   // 202
+$transferred= $pivot->sum()['bytes'];                       // 1072
+
+$average= $pivot->average('OK')['bytes'];                   // 101.0
+$average= $pivot->average()['bytes'];                       // 178.7
 ```
 
 ### Drill down
@@ -115,7 +123,7 @@ $columns= $pivot->columns();                   // ['2015-05-10', '2015-05-11']
 // 2015-05-11: 358 / 1072 bytes = 33.4%
 $total= $pivot->total()['bytes'];
 foreach ($columns as $date) {
-  $bytes= $pivot->total($date)['bytes'];
+  $bytes= $pivot->column($date)['bytes'];
   printf("%s: %d / %d bytes = %.1f%%\n", $date, $bytes, $total, $bytes / $total * 100);
 }
 ```

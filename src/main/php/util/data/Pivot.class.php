@@ -153,13 +153,27 @@ class Pivot extends \lang\Object {
   }
 
   /**
-   * Returns a single column
+   * Returns counts for given single column
    *
    * @param  string $column
-   * @return var[]
+   * @param  string* $path
+   * @return [:var]
+   */
+  public function records($column) {
+    $fact= $this->fact(array_slice(func_get_args(), 1));
+    return $fact[self::COLS][$column][self::COUNT];
+  }
+
+  /**
+   * Returns sums for given single column
+   *
+   * @param  string $column
+   * @param  string* $path
+   * @return [:var]
    */
   public function column($column) {
-    return $this->facts[self::COLS][$column];
+    $fact= $this->fact(array_slice(func_get_args(), 1));
+    return $fact[self::COLS][$column][self::TOTAL];
   }
 
   /**
@@ -168,7 +182,7 @@ class Pivot extends \lang\Object {
    * @param  string $column
    * @return [:var]
    */
-  public function total($column= null) {
-    return null === $column ? $this->facts[self::TOTAL] : $this->facts[self::COLS][$column][self::TOTAL];
+  public function total() {
+    return $this->facts[self::TOTAL];
   }
 }

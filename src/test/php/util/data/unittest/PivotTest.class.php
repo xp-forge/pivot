@@ -90,16 +90,6 @@ class PivotTest extends \unittest\TestCase {
   }
 
   #[@test]
-  public function total_by_date() {
-    $pivot= Sequence::of($this->measurements())->collect((new InPivot())
-      ->groupingBy('type')
-      ->spreadingOn('date')
-      ->summing('occurrences')
-    );
-    $this->assertEquals(119, $pivot->total('2015-05-10')['occurrences']);
-  }
-
-  #[@test]
   public function count() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -171,16 +161,43 @@ class PivotTest extends \unittest\TestCase {
   }
 
   #[@test]
+  public function records() {
+    $pivot= Sequence::of($this->measurements())->collect((new InPivot())
+      ->groupingBy('type')
+      ->spreadingOn('date')
+      ->summing('occurrences')
+    );
+    $this->assertEquals(5, $pivot->records('2015-05-10'));
+  }
+
+  #[@test]
+  public function records_by() {
+    $pivot= Sequence::of($this->measurements())->collect((new InPivot())
+      ->groupingBy('type')
+      ->spreadingOn('date')
+      ->summing('occurrences')
+    );
+    $this->assertEquals(1, $pivot->records('2015-05-10', 'ok'));
+  }
+
+  #[@test]
   public function column() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
       ->spreadingOn('date')
       ->summing('occurrences')
     );
-    $this->assertEquals(
-      [Pivot::COUNT => 5, Pivot::TOTAL => ['occurrences' => 119]],
-      $pivot->column('2015-05-10')
+    $this->assertEquals(['occurrences' => 119], $pivot->column('2015-05-10'));
+  }
+
+  #[@test]
+  public function column_by() {
+    $pivot= Sequence::of($this->measurements())->collect((new InPivot())
+      ->groupingBy('type')
+      ->spreadingOn('date')
+      ->summing('occurrences')
     );
+    $this->assertEquals(['occurrences' => 9], $pivot->column('2015-05-10', 'ok'));
   }
 
   #[@test, @values([[401, 1], [404, 4], [500, 5]])]
