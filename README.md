@@ -21,7 +21,13 @@ Given the following input, e.g. from a logfile:
 ...
 ```
 
-We load this into our pivot table using the following:
+We will parse this using `sscanf()`, transforming the lines into arrays like the following:
+
+```php
+["2015-05-10", "00:00:48", "GOOD", 200, 95, "ETag: 214ceb4b-980-3a7bbd9630480"]
+```
+
+We can the load this into our pivot table using the array offsets (*if we had a map, we could use its string keys - for objects we'll pass references to the getters*). Putting it together, we get the following:
 
 ```php
 use io\streams\TextReader;
