@@ -15,10 +15,9 @@ Given the following input, e.g. from a logfile:
 
 ```
 2015-05-10 00:00:09 OK: 304 100 bytes
-2015-05-10 00:00:17 OK: 304 100 bytes
-2015-05-10 00:00:42 OK: 304 100 bytes
-2015-05-10 00:00:48 GOOD: 200 104 bytes (ETag: 214ceb4b-980-3a7bbd9630480)
+2015-05-10 00:00:48 GOOD: 200 95 bytes (ETag: 214ceb4b-980-3a7bbd9630480)
 2015-05-10 00:00:49 ERROR: 404 512 bytes (Not found)
+2015-05-11 00:00:17 OK: 304 95 bytes
 ...
 ```
 
@@ -30,10 +29,10 @@ use io\streams\FileInputStream;
 use util\data\PivotCreation;
 
 $pivot= (new PivotCreation())
-  ->groupingBy(2)    // status
-  ->groupingBy(3)    // code
-  ->spreadingBy(0)   // date
-  ->summing(4, 'n')  // bytes
+  ->groupingBy(2)        // category
+  ->groupingBy(3)        // code
+  ->spreadingBy(0)       // date
+  ->summing(4, 'bytes')  // bytes
   ->create()
 );
 
@@ -43,30 +42,47 @@ while (null !== ($line= $reader->readLine())) {
 }
 ```
 
-The resulting table will look something like this:
+The resulting table will look something like this (using "b:" as an abbreviation for *bytes*):
 
 ```
 .-----------------------------------------------------------------------------.
 | Category  | 2015-05-10 | 2015-05-11 | Sum      | Percentage | Count | Avg.   |
 |-----------|------------|------------|----------|------------|-------|--------|
-| OK        | n:100      | n:95       | n:195    | n:97.5     | n:2   | n:97.5 |
-| GOOD      | n:2        | n:0        | n:2      | n:1.0      | n:1   | n:2    |
-| ERROR     | n:0        | n:3        | n:3      | n:1.5      | n:3   | n:1.0  |
-| ^- client | ^- n:0     | ^- n:2     | ^- n:2   | ^- n:1.0   | n:3   | n:0.67 |
-|   ^- 403  |   ^- n:0   |   ^- n:1   |   ^- n:1 |   ^- n:0.5 | n:1   | n:1.0  |
-|   ^- 404  |   ^- n:0   |   ^- n:1   |   ^- n:1 |   ^- n:0.5 | n:2   | n:0.5  |
-| ^- server | ^- n:0     | ^- n:1     | ^- n:1   | ^- n:0.5   | n:1   | n:0.5  |
-|   ^- 500  |   ^- n:0   |   ^- n:1   |   ^- n:1 |   ^- n:0.5 | n:1   | n:0.5  |
+| OK        | b:100      | b:95       | b:195    | b:97.5     | b:2   | b:97.5 |
+| GOOD      | b:2        | b:0        | b:2      | b:1.0      | b:1   | b:2    |
+| ERROR     | b:0        | b:3        | b:3      | b:1.5      | b:3   | b:1.0  |
+| ^- client | ^- b:0     | ^- b:2     | ^- b:2   | ^- b:1.0   | b:3   | b:0.67 |
+|   ^- 403  |   ^- b:0   |   ^- b:1   |   ^- b:1 |   ^- b:0.5 | b:1   | b:1.0  |
+|   ^- 404  |   ^- b:0   |   ^- b:1   |   ^- b:1 |   ^- b:0.5 | b:2   | b:0.5  |
+| ^- server | ^- b:0     | ^- b:1     | ^- b:1   | ^- b:0.5   | b:1   | b:0.5  |
+|   ^- 500  |   ^- b:0   |   ^- b:1   |   ^- b:1 |   ^- b:0.5 | b:1   | b:0.5  |
 |-----------|------------|------------|----------|------------|-------|--------|
-| Total     | n:102      | n:98       | n:200    |            | n:14  |        |
+| Total     | b:102      | b:98       | b:200    |            | b:14  |        |
 `-----------------------------------------------------------------------------´
 ```
-Accessing by category
----------------------
-Use the `sum()`, `average()` and `percentage()` methods to access the values. In the above example, `sum("OK")['n']` = 195, `average("ERROR")['n']` = 1.5 and `percentage("GOOD")['n']` = 1.0. The subtotals e.g. for client errors can be accessed by passing in varargs: `sum("ERROR", "client")['n']` = 2. The number of records included in the fact is returned by `count("OK")` = 2.
 
-To iterate over the categories, use the `rows()` method.
-Accessing a single row can be done via `row()`.
+### Accessing by category
+
+We can iterate over the categories using the `rows()` method. Accessing a single row can be done via `row()`. The aggregates can be accessed by passing the category to the respective methods.
+
+```php
+$rows= $pivot->rows();                     // ['OK', 'GOOD', 'ERROR']
+$transferred= $pivot->sum('OK')['bytes'];  // 195
+$average= $pivot->average('OK')['bytes'];  // 97.5
+
+// OK: 97.5%
+// GOOD: 1.0%
+// ERROR: 1.5%
+foreach ($rows as $row) {
+  printf("%s: %.2f%%\n", $row, $pivot->percentage($row)['bytes']);
+}
+
+// client: 1
+// server: 3
+foreach ($pivot->rows('ERROR') as $code) {
+  printf("ERROR %s: %dx\n", $row, $pivot->count('ERROR', $code));
+}
+```
 
 Accessing by date
 -----------------
