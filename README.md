@@ -27,7 +27,7 @@ We will parse this using `sscanf()`, transforming the lines into arrays like the
 ["2015-05-10", "00:00:48", "GOOD", 200, 95, "ETag: 214ceb4b-980-3a7bbd9630480"]
 ```
 
-We can the load this into our pivot table using the array offsets (*if we had a map, we could use its string keys - for objects we'll pass references to the getters*). Putting it together, we get the following:
+We can the load this into our pivot table using the array offsets (*if we had a map, we could use its string keys; for objects we'll pass references to the getters and for more complex situations we can pass closures*). Putting it together, we get the following:
 
 ```php
 use io\streams\TextReader;
@@ -72,9 +72,9 @@ The resulting table will look something like this (using "b:" as an abbreviation
 We can iterate over the categories using the `rows()` method. Accessing a single row can be done via `row()`. The aggregates can be accessed by passing the category to the respective methods.
 
 ```php
-$rows= $pivot->rows();                     // ['OK', 'GOOD', 'ERROR']
-$transferred= $pivot->sum('OK')['bytes'];  // 195
-$average= $pivot->average('OK')['bytes'];  // 97.5
+$rows= $pivot->rows();                         // ['OK', 'GOOD', 'ERROR']
+$transferred= $pivot->sum('OK')['bytes'];      // 195
+$average= $pivot->average('OK')['bytes'];      // 97.5
 
 // OK: 97.5%
 // GOOD: 1.0%
@@ -90,16 +90,19 @@ foreach ($pivot->rows('ERROR') as $code) {
 }
 ```
 
-Accessing by date
------------------
-Pass the date to the `total()` method, e.g. `total("2015-05-10")['n']` = 102.
+### Accessing by date
 
-To iterate over the dates, use the `columns()` method.
-Accessing a single column can be done via `column()`.
+To iterate over the dates, use the `columns()` method. Accessing a single column can be done via `column()`. To access the values by a given date, the `total()` method accepts the date.
 
-Grand totals
-------------
-Use the `total()` method without any argument to access the grand total for all
-values (`['n' => 200]`).
+```php
+$columns= $pivot->columns();                   // ['2015-05-10', '2015-05-11']
+$total= $pivot->total('2015-05-10')['bytes'];  // 102
+```
 
-The `count()` method will return many records we processed on (14).
+###  Grand totals
+Use the `total()` method without any argument to access the grand total for all values. The `count()` method returns the total number of records processed.
+
+```php
+$total= $pivot->total()['bytes'];              // 200
+$count= $pivot->count();                       // 14
+```
