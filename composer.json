@@ -7,7 +7,7 @@
   "keywords": ["module", "xp"],
   "require" : {
     "xp-framework/core": "^6.0",
-    "xp-forge/sequenxe": "^2.1",
+    "xp-forge/sequence": "^2.1",
     "php" : ">=5.4.0"
   },
   "autoload" : {
