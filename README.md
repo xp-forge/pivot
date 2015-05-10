@@ -22,7 +22,7 @@ Given the following input, e.g. from a logfile:
 ...
 ```
 
-We load this into pivot table using the following:
+We load this into our pivot table using the following:
 
 ```php
 use io\streams\TextReader;

@@ -8,6 +8,9 @@
 class InPivot extends \lang\Object implements ICollector {
   private $creation;
 
+  /**
+   * Creates a new collector instance
+   */
   public function __construct() {
     $this->creation= new PivotCreation();
   }
