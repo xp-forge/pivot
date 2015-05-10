@@ -55,6 +55,7 @@ class PivotCreation extends \lang\Object {
     return $this;
   }
 
+  /** @return util.data.Pivot */
   public function create() {
     return new Pivot($this->groupBy, $this->spreadOn, $this->aggregate);
   }
