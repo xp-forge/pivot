@@ -50,7 +50,7 @@ while (null !== ($line= $reader->readLine())) {
 }
 ```
 
-The resulting table will look something like this (using "b:" as an abbreviation for *bytes*):
+The resulting table will look something like this (using "b:" as an abbreviation for *bytes* - this becomes relevant once we sum on multiple columns):
 
 ```
 .------------------------------------------------- ~ ----------------------------.
@@ -77,7 +77,7 @@ $count= $pivot->count('OK');                   // 2
 $count= $pivot->count();                       // 6
 
 $transferred= $pivot->sum('OK')['bytes'];      // 202
-$transferred= $pivot->sum')['bytes'];          // 1072
+$transferred= $pivot->sum()['bytes'];          // 1072
 
 $average= $pivot->average('OK')['bytes'];      // 101.0
 $average= $pivot->average()['bytes'];          // 178.7
@@ -94,7 +94,7 @@ $rows= $pivot->rows();                         // ['OK', 'GOOD', 'ERROR']
 // GOOD: 1 / 6 = 16.7%
 // ERROR: 3 / 6 = 50.0%
 $total= $pivot->count();
-foreach ($pivot->rows() as $cat) {
+foreach ($rows as $cat) {
   $count= $pivot->count($cat);
   printf("%s: %d / %d = %.1f%%\n", $cat, $count, $total, $count / $total * 100);
 }
@@ -114,7 +114,7 @@ $columns= $pivot->columns();                   // ['2015-05-10', '2015-05-11']
 // 2015-05-10: 714 / 1072 bytes = 66.6%
 // 2015-05-11: 358 / 1072 bytes = 33.4%
 $total= $pivot->total()['bytes'];
-foreach ($pivot->columns() as $date) {
+foreach ($columns as $date) {
   $bytes= $pivot->total($date)['bytes'];
   printf("%s: %d / %d bytes = %.1f%%\n", $date, $bytes, $total, $bytes / $total * 100);
 }
