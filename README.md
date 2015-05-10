@@ -51,28 +51,29 @@ while (null !== ($line= $reader->readLine())) {
 The resulting table will look something like this (using "b:" as an abbreviation for *bytes*):
 
 ```
-.-----------------------------------------------------------------------------.
-| Category  | 2015-05-10 | 2015-05-11 | Sum      | Percentage | Count | Avg.   |
-|-----------|------------|------------|----------|------------|-------|--------|
-| OK        | b:100      | b:95       | b:195    | b:97.5     | b:2   | b:97.5 |
-| GOOD      | b:2        | b:0        | b:2      | b:1.0      | b:1   | b:2    |
-| ERROR     | b:0        | b:3        | b:3      | b:1.5      | b:3   | b:1.0  |
-| ^- client | ^- b:0     | ^- b:2     | ^- b:2   | ^- b:1.0   | b:3   | b:0.67 |
-|   ^- 403  |   ^- b:0   |   ^- b:1   |   ^- b:1 |   ^- b:0.5 | b:1   | b:1.0  |
-|   ^- 404  |   ^- b:0   |   ^- b:1   |   ^- b:1 |   ^- b:0.5 | b:2   | b:0.5  |
-| ^- server | ^- b:0     | ^- b:1     | ^- b:1   | ^- b:0.5   | b:1   | b:0.5  |
-|   ^- 500  |   ^- b:0   |   ^- b:1   |   ^- b:1 |   ^- b:0.5 | b:1   | b:0.5  |
-|-----------|------------|------------|----------|------------|-------|--------|
-| Total     | b:102      | b:98       | b:200    |            | b:14  |        |
-`-----------------------------------------------------------------------------´
+.-----------------------------------------------------------------------------------.
+| Category  | 2015-05-10 | 2015-05-11 | Count  | Sum      | Percentage | Avg.       |
+|-----------|------------|------------|--------|----------|------------|------------|
+| OK        | b:100      | b:95       | 2      | b:195    | b:97.5     | b:97.5     |
+| GOOD      | b:2        | b:0        | 1      | b:2      | b:1.0      | b:2        |
+| ERROR     | b:0        | b:3        | 3      | b:3      | b:1.5      | b:1.0      |
+| ^- client | ^- b:0     | ^- b:2     | ^- 3   | ^- b:2   | ^- b:1.0   | ^- b:0.67  |
+|   ^- 403  |   ^- b:0   |   ^- b:1   |   ^- 1 |   ^- b:1 |   ^- b:0.5 |   ^- b:1.0 |
+|   ^- 404  |   ^- b:0   |   ^- b:1   |   ^- 2 |   ^- b:1 |   ^- b:0.5 |   ^- b:0.5 |
+| ^- server | ^- b:0     | ^- b:1     | ^- 1   | ^- b:1   | ^- b:0.5   | ^- b:0.5   |
+|   ^- 500  |   ^- b:0   |   ^- b:1   |   ^- 1 |   ^- b:1 |   ^- b:0.5 |  ^- b:0.5  |
+|-----------|------------|------------|--------|----------|------------|------------|
+| Total     | b:102      | b:98       | 14     | b:200    |            |            |
+`-----------------------------------------------------------------------------------´
 ```
 
 ### Accessing by category
 
-We can iterate over the categories using the `rows()` method. Accessing a single row can be done via `row()`. The aggregates can be accessed by passing the category to the respective methods.
+We can iterate over the categories using the `rows()` method. Accessing a single row can be done via `row()`. The number of records of grouped by the grouping columns can be retrieved via `count()`. The aggregates can be accessed by passing the category to the respective methods. 
 
 ```php
 $rows= $pivot->rows();                         // ['OK', 'GOOD', 'ERROR']
+$count= $pivot->count('OK');                   // 2
 $transferred= $pivot->sum('OK')['bytes'];      // 195
 $average= $pivot->average('OK')['bytes'];      // 97.5
 
