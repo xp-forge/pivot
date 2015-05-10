@@ -14,29 +14,32 @@ Example
 Given the following input, e.g. from a logfile:
 
 ```
-2015-05-10 00:00:09 OK: 304
-2015-05-10 00:00:17 OK: 304
-2015-05-10 00:00:42 OK: 304
-2015-05-10 00:00:48 GOOD: 200 (Cache miss, reload)
-2015-05-10 00:00:49 ERROR: 404 (Not found)
+2015-05-10 00:00:09 OK: 304 100 bytes
+2015-05-10 00:00:17 OK: 304 100 bytes
+2015-05-10 00:00:42 OK: 304 100 bytes
+2015-05-10 00:00:48 GOOD: 200 104 bytes (ETag: 214ceb4b-980-3a7bbd9630480)
+2015-05-10 00:00:49 ERROR: 404 512 bytes (Not found)
 ...
 ```
 
-...we load this into pivot table using the following:
+We load this into pivot table using the following:
 
 ```php
 use io\streams\TextReader;
-use util\data\Pivot;
+use io\streams\FileInputStream;
+use util\data\PivotCreation;
 
-$pivot= new Pivot(
-  [function($row) { return $row[2]; }, function($row) { return $row[3]; }],
-  function($row) { return $row[1]; },
-  ['occurrences' => function($row) { return 1; }]
+$pivot= (new PivotCreation())
+  ->groupingBy(2)    // status
+  ->groupingBy(3)    // code
+  ->spreadingBy(0)   // date
+  ->summing(4, 'n')  // bytes
+  ->create()
 );
 
 $reader= new TextReader(new FileInputStream('measures.log'));
 while (null !== ($line= $reader->readLine())) {
-  $pivot->add(sscanf($line, '%[0-9-] %[0-9:] %[^:]: %d (%[^)])'));
+  $pivot->add(sscanf($line, '%[0-9-] %[0-9:] %[^:]: %d %d bytes (%[^)])'));
 }
 ```
 

@@ -6,20 +6,10 @@
  * @test  xp://util.data.unittest.PivotTest
  */
 class InPivot extends \lang\Object implements ICollector {
-  private $groupBy= [], $spreadOn= null, $aggregate= [];
+  private $creation;
 
-  /**
-   * Helper for groupingBy() and spreadingOn()
-   *
-   * @param  var $arg
-   * @return function(var): var
-   */
-  private function select($arg) {
-    if (is_string($arg) || is_int($arg)) {
-      return function($value) use($arg) { return $value[$arg]; };
-    } else {
-      return Functions::$UNARYOP->cast($arg);
-    }
+  public function __construct() {
+    $this->creation= new PivotCreation();
   }
 
   /**
@@ -29,7 +19,7 @@ class InPivot extends \lang\Object implements ICollector {
    * @return self
    */
   public function groupingBy($arg) {
-    $this->groupBy[]= $this->select($arg);
+    $this->creation->groupingBy($arg);
     return $this;
   }
 
@@ -40,7 +30,7 @@ class InPivot extends \lang\Object implements ICollector {
    * @return self
    */
   public function spreadingOn($arg) {
-    $this->spreadOn= $this->select($arg);
+    $this->creation->spreadingOn($arg);
     return $this;
   }
 
@@ -52,19 +42,13 @@ class InPivot extends \lang\Object implements ICollector {
    * @return self
    */
   public function summing($arg, $name= null) {
-    if (is_int($arg) || is_string($arg)) {
-      $this->aggregate[null === $name ? $arg : $name]= function($value) use($arg) { return $value[$arg]; };
-    } else {
-      $this->aggregate[$name ?: sizeof($this->aggregate)]= Functions::$UNARYOP->cast($arg);
-    }
+    $this->creation->summing($arg, $name);
     return $this;
   }
 
   /** @return function(): var */
   public function supplier() {
-    return function() {
-      return new Pivot($this->groupBy, $this->spreadOn, $this->aggregate);
-    };
+    return function() { return $this->creation->create(); };
   }
 
   /** @return function(var: var): void */
