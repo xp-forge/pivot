@@ -1,7 +1,15 @@
 <?php namespace util\data;
 
+use lang\FunctionType;
+use lang\Type;
+
 class PivotCreation extends \lang\Object {
   private $groupBy= [], $spreadOn= null, $aggregate= [];
+  private static $SELECT;
+
+  static function __static() {
+    self::$SELECT= new FunctionType([Type::$VAR], Type::$VAR);
+  }
 
   /**
    * Helper for groupingBy() and spreadingOn()
@@ -13,7 +21,7 @@ class PivotCreation extends \lang\Object {
     if (is_string($arg) || is_int($arg)) {
       return function($value) use($arg) { return $value[$arg]; };
     } else {
-      return Functions::$UNARYOP->cast($arg);
+      return self::$SELECT->cast($arg);
     }
   }
 
@@ -50,7 +58,7 @@ class PivotCreation extends \lang\Object {
     if (is_int($arg) || is_string($arg)) {
       $this->aggregate[null === $name ? $arg : $name]= function($value) use($arg) { return $value[$arg]; };
     } else {
-      $this->aggregate[$name ?: sizeof($this->aggregate)]= Functions::$UNARYOP->cast($arg);
+      $this->aggregate[$name ?: sizeof($this->aggregate)]= self::$SELECT->cast($arg);
     }
     return $this;
   }
