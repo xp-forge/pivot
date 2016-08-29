@@ -1,6 +1,10 @@
 Pivot change log
 ================
 
+## 1.1.0 / 2016-08-29
+
+* Added forward compatibility with XP 8.0.0 - @thekid
+
 ## 1.0.0 / 2016-02-22
 
 * Added version compatibility with XP 7 - @thekid
