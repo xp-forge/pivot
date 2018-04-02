@@ -5,7 +5,7 @@
  *
  * @test  xp://util.data.unittest.PivotTest
  */
-class InPivot extends \lang\Object implements ICollector {
+class InPivot implements ICollector {
   private $creation;
 
   /**

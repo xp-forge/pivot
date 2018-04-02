@@ -8,7 +8,7 @@ use lang\IllegalArgumentException;
  * @see   https://github.com/xp-forge/pivot
  * @test  xp://util.data.unittest.PivotTest
  */
-class Pivot extends \lang\Object {
+class Pivot {
   const COUNT = 0;
   const TOTAL = 1;
   const ROWS  = 2;

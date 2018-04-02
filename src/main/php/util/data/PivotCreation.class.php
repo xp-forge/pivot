@@ -3,7 +3,7 @@
 use lang\FunctionType;
 use lang\Type;
 
-class PivotCreation extends \lang\Object {
+class PivotCreation {
   private $groupBy= [], $spreadOn= null, $aggregate= [];
   private static $SELECT;
 
