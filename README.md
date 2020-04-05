@@ -33,8 +33,7 @@ We will parse this using `sscanf()`, transforming the lines into arrays like the
 We can the load this into our pivot table using the array offsets (*if we had a map, we could use its string keys; for objects we'll pass references to the getters and for more complex situations we can pass closures*). Putting it together, we get the following:
 
 ```php
-use io\streams\TextReader;
-use io\streams\FileInputStream;
+use io\streams\{TextReader, FileInputStream};
 use util\data\PivotCreation;
 
 $pivot= (new PivotCreation())
