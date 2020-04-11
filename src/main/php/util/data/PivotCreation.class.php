@@ -1,7 +1,6 @@
 <?php namespace util\data;
 
-use lang\FunctionType;
-use lang\Type;
+use lang\{FunctionType, Type};
 
 class PivotCreation {
   private $groupBy= [], $spreadOn= null, $aggregate= [];

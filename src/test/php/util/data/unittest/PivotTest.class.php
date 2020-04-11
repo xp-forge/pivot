@@ -1,9 +1,7 @@
 <?php namespace util\data\unittest;
 
-use util\data\Sequence;
-use util\data\InPivot;
-use util\data\Pivot;
 use lang\IllegalArgumentException;
+use util\data\{InPivot, Pivot, Sequence};
 
 class PivotTest extends \unittest\TestCase {
 
