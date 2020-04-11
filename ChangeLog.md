@@ -3,6 +3,13 @@ Pivot change log
 
 ## ?.?.? / ????-??-??
 
+## 3.0.0 / 2020-04-11
+
+* Implemented xp-framework/rfc#334: Drop PHP 5.6:
+  . **Heads up:** Minimum required PHP version now is PHP 7.0.0
+  . Rewrote code base, grouping use statements
+  (@thekid)
+
 ## 2.0.1 / 2020-04-05
 
 * Made compatible with XP 10 - @thekid
