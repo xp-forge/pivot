@@ -1,6 +1,7 @@
 <?php namespace util\data\unittest;
 
 use lang\IllegalArgumentException;
+use unittest\{Expect, Test, Values};
 use util\data\{InPivot, Pivot, Sequence};
 
 class PivotTest extends \unittest\TestCase {
@@ -17,18 +18,18 @@ class PivotTest extends \unittest\TestCase {
     ];
   }
 
-  #[@test, @expect(IllegalArgumentException::class)]
+  #[Test, Expect(IllegalArgumentException::class)]
   public function groupingBy_cannot_be_omitted() {
     Sequence::of($this->measurements())->collect(new InPivot());
   }
 
-  #[@test]
+  #[Test]
   public function rows() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())->groupingBy('type'));
     $this->assertEquals(['good', 'ok', 'bad'], $pivot->rows());
   }
 
-  #[@test]
+  #[Test]
   public function row() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())->groupingBy('type'));
     $this->assertEquals(
@@ -37,7 +38,7 @@ class PivotTest extends \unittest\TestCase {
     );
   }
 
-  #[@test]
+  #[Test]
   public function row_with_sum() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -49,7 +50,7 @@ class PivotTest extends \unittest\TestCase {
     );
   }
 
-  #[@test]
+  #[Test]
   public function row_with_sums() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -62,7 +63,7 @@ class PivotTest extends \unittest\TestCase {
     );
   }
 
-  #[@test]
+  #[Test]
   public function row_with_spreading() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -78,7 +79,7 @@ class PivotTest extends \unittest\TestCase {
     );
   }
 
-  #[@test]
+  #[Test]
   public function total() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -87,7 +88,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(220, $pivot->total()['occurrences']);
   }
 
-  #[@test]
+  #[Test]
   public function count() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -95,7 +96,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(6, $pivot->count());
   }
 
-  #[@test, @values([['good', 2], ['ok', 1], ['bad', 3]])]
+  #[Test, Values([['good', 2], ['ok', 1], ['bad', 3]])]
   public function count_of($category, $expect) {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -103,7 +104,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals($expect, $pivot->count($category));
   }
 
-  #[@test]
+  #[Test]
   public function sum() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -112,7 +113,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(220, $pivot->sum()['occurrences']);
   }
 
-  #[@test, @values([['good', 201], ['ok', 9], ['bad', 10]])]
+  #[Test, Values([['good', 201], ['ok', 9], ['bad', 10]])]
   public function sum_of($category, $expect) {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -121,7 +122,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals($expect, $pivot->sum($category)['occurrences']);
   }
 
-  #[@test]
+  #[Test]
   public function average() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -130,7 +131,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(36.667, round($pivot->average()['occurrences'], 3));
   }
 
-  #[@test, @values([['good', 100.500], ['ok', 9.000], ['bad', 3.333]])]
+  #[Test, Values([['good', 100.500], ['ok', 9.000], ['bad', 3.333]])]
   public function average_of($category, $expect) {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -139,7 +140,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals($expect, round($pivot->average($category)['occurrences'], 3));
   }
 
-  #[@test]
+  #[Test]
   public function columns_empty_when_used_without_spreading() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -148,7 +149,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals([], $pivot->columns());
   }
 
-  #[@test]
+  #[Test]
   public function columns() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -158,7 +159,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(['2015-05-10', '2015-05-11'], $pivot->columns());
   }
 
-  #[@test]
+  #[Test]
   public function records() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -168,7 +169,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(5, $pivot->records('2015-05-10'));
   }
 
-  #[@test]
+  #[Test]
   public function records_by() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -178,7 +179,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(1, $pivot->records('2015-05-10', 'ok'));
   }
 
-  #[@test]
+  #[Test]
   public function column() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -188,7 +189,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(['occurrences' => 119], $pivot->column('2015-05-10'));
   }
 
-  #[@test]
+  #[Test]
   public function column_by() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -198,7 +199,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(['occurrences' => 9], $pivot->column('2015-05-10', 'ok'));
   }
 
-  #[@test, @values([[401, 1], [404, 4], [500, 5]])]
+  #[Test, Values([[401, 1], [404, 4], [500, 5]])]
   public function grouping_by_multiple_columns($status, $occurrences) {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -210,7 +211,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals($occurrences, $pivot->sum('bad', $status)['occurrences']);
   }
 
-  #[@test]
+  #[Test]
   public function summing_multiple_colums() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
@@ -220,11 +221,7 @@ class PivotTest extends \unittest\TestCase {
     $this->assertEquals(['occurrences' => 10, 'bytes' => 3328], $pivot->sum('bad'));
   }
 
-  #[@test, @values([
-  #  [null, [10]],
-  #  [0, [10]],
-  #  ['occurrences', ['occurrences' => 10]]
-  #])]
+  #[Test, Values([[null, [10]], [0, [10]], ['occurrences', ['occurrences' => 10]]])]
   public function summing_with_function_and_names($key, $expect) {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
