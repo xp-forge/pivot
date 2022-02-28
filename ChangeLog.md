@@ -3,6 +3,11 @@ Pivot change log
 
 ## ?.?.? / ????-??-??
 
+## 3.1.0 / 2022-02-28
+
+* Added XP 11 support, made compatible with `xp-forge/sequence` 10.0.0
+  (@thekid)
+
 ## 3.0.0 / 2020-04-11
 
 * Implemented xp-framework/rfc#334: Drop PHP 5.6:
