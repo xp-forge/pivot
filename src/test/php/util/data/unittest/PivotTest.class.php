@@ -1,10 +1,10 @@
 <?php namespace util\data\unittest;
 
 use lang\IllegalArgumentException;
-use unittest\{Expect, Test, Values};
+use test\{Assert, Expect, Test, Values};
 use util\data\{InPivot, Pivot, Sequence};
 
-class PivotTest extends \unittest\TestCase {
+class PivotTest {
 
   /** @return var[] */
   private function measurements() {
@@ -26,13 +26,13 @@ class PivotTest extends \unittest\TestCase {
   #[Test]
   public function rows() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())->groupingBy('type'));
-    $this->assertEquals(['good', 'ok', 'bad'], $pivot->rows());
+    Assert::equals(['good', 'ok', 'bad'], $pivot->rows());
   }
 
   #[Test]
   public function row() {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())->groupingBy('type'));
-    $this->assertEquals(
+    Assert::equals(
       [Pivot::COUNT => 2, Pivot::TOTAL => [], Pivot::ROWS => [], Pivot::COLS => []],
       $pivot->row('good')
     );
@@ -44,7 +44,7 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('type')
       ->summing('bytes')
     );
-    $this->assertEquals(
+    Assert::equals(
       [Pivot::COUNT => 2, Pivot::TOTAL => ['bytes' => 4020], Pivot::ROWS => [], Pivot::COLS => []],
       $pivot->row('good')
     );
@@ -57,7 +57,7 @@ class PivotTest extends \unittest\TestCase {
       ->summing('bytes')
       ->summing('occurrences')
     );
-    $this->assertEquals(
+    Assert::equals(
       [Pivot::COUNT => 2, Pivot::TOTAL => ['bytes' => 4020, 'occurrences' => 201], Pivot::ROWS => [], Pivot::COLS => []],
       $pivot->row('good')
     );
@@ -70,7 +70,7 @@ class PivotTest extends \unittest\TestCase {
       ->spreadingOn('date')
       ->summing('occurrences')
     );
-    $this->assertEquals(
+    Assert::equals(
       [Pivot::COUNT => 2, Pivot::TOTAL => ['occurrences' => 201], Pivot::ROWS => [], Pivot::COLS => [
         '2015-05-10' => [Pivot::COUNT => 1, Pivot::TOTAL => ['occurrences' => 100]],
         '2015-05-11' => [Pivot::COUNT => 1, Pivot::TOTAL => ['occurrences' => 101]]
@@ -85,7 +85,7 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('type')
       ->summing('occurrences')
     );
-    $this->assertEquals(220, $pivot->total()['occurrences']);
+    Assert::equals(220, $pivot->total()['occurrences']);
   }
 
   #[Test]
@@ -93,7 +93,7 @@ class PivotTest extends \unittest\TestCase {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
     );
-    $this->assertEquals(6, $pivot->count());
+    Assert::equals(6, $pivot->count());
   }
 
   #[Test, Values([['good', 2], ['ok', 1], ['bad', 3]])]
@@ -101,7 +101,7 @@ class PivotTest extends \unittest\TestCase {
     $pivot= Sequence::of($this->measurements())->collect((new InPivot())
       ->groupingBy('type')
     );
-    $this->assertEquals($expect, $pivot->count($category));
+    Assert::equals($expect, $pivot->count($category));
   }
 
   #[Test]
@@ -110,7 +110,7 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('type')
       ->summing('occurrences')
     );
-    $this->assertEquals(220, $pivot->sum()['occurrences']);
+    Assert::equals(220, $pivot->sum()['occurrences']);
   }
 
   #[Test, Values([['good', 201], ['ok', 9], ['bad', 10]])]
@@ -119,7 +119,7 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('type')
       ->summing('occurrences')
     );
-    $this->assertEquals($expect, $pivot->sum($category)['occurrences']);
+    Assert::equals($expect, $pivot->sum($category)['occurrences']);
   }
 
   #[Test]
@@ -128,7 +128,7 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('type')
       ->summing('occurrences')
     );
-    $this->assertEquals(36.667, round($pivot->average()['occurrences'], 3));
+    Assert::equals(36.667, round($pivot->average()['occurrences'], 3));
   }
 
   #[Test, Values([['good', 100.500], ['ok', 9.000], ['bad', 3.333]])]
@@ -137,7 +137,7 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('type')
       ->summing('occurrences')
     );
-    $this->assertEquals($expect, round($pivot->average($category)['occurrences'], 3));
+    Assert::equals($expect, round($pivot->average($category)['occurrences'], 3));
   }
 
   #[Test]
@@ -146,7 +146,7 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('type')
       ->summing('occurrences')
     );
-    $this->assertEquals([], $pivot->columns());
+    Assert::equals([], $pivot->columns());
   }
 
   #[Test]
@@ -156,7 +156,7 @@ class PivotTest extends \unittest\TestCase {
       ->spreadingOn('date')
       ->summing('occurrences')
     );
-    $this->assertEquals(['2015-05-10', '2015-05-11'], $pivot->columns());
+    Assert::equals(['2015-05-10', '2015-05-11'], $pivot->columns());
   }
 
   #[Test]
@@ -166,7 +166,7 @@ class PivotTest extends \unittest\TestCase {
       ->spreadingOn('date')
       ->summing('occurrences')
     );
-    $this->assertEquals(5, $pivot->records('2015-05-10'));
+    Assert::equals(5, $pivot->records('2015-05-10'));
   }
 
   #[Test]
@@ -176,7 +176,7 @@ class PivotTest extends \unittest\TestCase {
       ->spreadingOn('date')
       ->summing('occurrences')
     );
-    $this->assertEquals(1, $pivot->records('2015-05-10', 'ok'));
+    Assert::equals(1, $pivot->records('2015-05-10', 'ok'));
   }
 
   #[Test]
@@ -186,7 +186,7 @@ class PivotTest extends \unittest\TestCase {
       ->spreadingOn('date')
       ->summing('occurrences')
     );
-    $this->assertEquals(['occurrences' => 119], $pivot->column('2015-05-10'));
+    Assert::equals(['occurrences' => 119], $pivot->column('2015-05-10'));
   }
 
   #[Test]
@@ -196,7 +196,7 @@ class PivotTest extends \unittest\TestCase {
       ->spreadingOn('date')
       ->summing('occurrences')
     );
-    $this->assertEquals(['occurrences' => 9], $pivot->column('2015-05-10', 'ok'));
+    Assert::equals(['occurrences' => 9], $pivot->column('2015-05-10', 'ok'));
   }
 
   #[Test, Values([[401, 1], [404, 4], [500, 5]])]
@@ -206,9 +206,9 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('status')
       ->summing('occurrences')
     );
-    $this->assertEquals(10, $pivot->sum('bad')['occurrences']);
-    $this->assertEquals([401, 404, 500], $pivot->rows('bad'));
-    $this->assertEquals($occurrences, $pivot->sum('bad', $status)['occurrences']);
+    Assert::equals(10, $pivot->sum('bad')['occurrences']);
+    Assert::equals([401, 404, 500], $pivot->rows('bad'));
+    Assert::equals($occurrences, $pivot->sum('bad', $status)['occurrences']);
   }
 
   #[Test]
@@ -218,7 +218,7 @@ class PivotTest extends \unittest\TestCase {
       ->summing('occurrences')
       ->summing('bytes')
     );
-    $this->assertEquals(['occurrences' => 10, 'bytes' => 3328], $pivot->sum('bad'));
+    Assert::equals(['occurrences' => 10, 'bytes' => 3328], $pivot->sum('bad'));
   }
 
   #[Test, Values([[null, [10]], [0, [10]], ['occurrences', ['occurrences' => 10]]])]
@@ -227,6 +227,6 @@ class PivotTest extends \unittest\TestCase {
       ->groupingBy('type')
       ->summing(function($row) { return $row['occurrences']; }, $key)
     );
-    $this->assertEquals($expect, $pivot->sum('bad'));
+    Assert::equals($expect, $pivot->sum('bad'));
   }
 }
