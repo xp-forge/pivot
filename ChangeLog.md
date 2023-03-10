@@ -3,6 +3,8 @@ Pivot change log
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #1: Migrate to new testing library - @thekid
+
 ## 3.1.0 / 2022-02-28
 
 * Added XP 11 support, made compatible with `xp-forge/sequence` 10.0.0
