@@ -3,6 +3,10 @@ Pivot change log
 
 ## ?.?.? / ????-??-??
 
+## 3.2.0 / 2024-03-24
+
+* Made compatible with XP 12 - @thekid
+
 * Merged PR #1: Migrate to new testing library - @thekid
 
 ## 3.1.0 / 2022-02-28
